@@ -6,7 +6,7 @@ router.get('/all', (req, res) => {
         .then(
             function findSuccess(data) {
                 res.status(200).json({
-                    games: games,
+                    games: data,
                     message: "Data fetched."
                 })
             },
@@ -23,14 +23,22 @@ router.get('/:id', (req, res) => {
     Game.findOne({ where: { id: req.params.id, owner_id: req.user.id } })
         .then(
             function findSuccess(game) {
+              if (game) {
                 res.status(200).json({
-                    game: game
-                })
+                  game: game
+              })
+              } else {
+                res.status(404).json({
+                  game: game,
+                  message: 'data not found'
+              })
+              }
+
             },
 
             function findFail(err) {
                 res.status(500).json({
-                    message: "Data not found."
+                    message: "Request error"
                 })
             }
         )
@@ -70,7 +78,7 @@ router.put('/update/:id', (req, res) => {
         {
             where: {
                 id: req.params.id,
-                owner_id: req.user
+                owner_id: req.user.id
             }
         })
         .then(
@@ -99,18 +107,27 @@ router.delete('/remove/:id', (req, res) => {
     })
     .then(
         function deleteSuccess(game) {
+          if (game) {
             res.status(200).json({
-                game: game,
-                message: "Successfully deleted"
-            })
+              game: game,
+              message: "Successfully deleted"
+          })
+          } else {
+            res.status(404).json({
+              game: game,
+              message: "Game not found "
+          })
+          }
+
         },
 
         function deleteFail(err) {
             res.status(500).json({
-                error: err.message
+                error: err.message,
+                message: "Query error"
             })
         }
     )
 })
 
-module.exports = routers;
+module.exports = router;
