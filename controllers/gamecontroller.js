@@ -107,15 +107,24 @@ router.delete('/remove/:id', (req, res) => {
     })
     .then(
         function deleteSuccess(game) {
+          if (game) {
             res.status(200).json({
-                game: game,
-                message: "Successfully deleted"
-            })
+              game: game,
+              message: "Successfully deleted"
+          })
+          } else {
+            res.status(404).json({
+              game: game,
+              message: "Game not found "
+          })
+          }
+
         },
 
         function deleteFail(err) {
             res.status(500).json({
-                error: err.message
+                error: err.message,
+                message: "Query error"
             })
         }
     )
